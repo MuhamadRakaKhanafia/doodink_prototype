@@ -8,8 +8,20 @@ class RoomService {
   RoomService({SupabaseClient? client}) : _client = client ?? SupabaseClientFactory.client;
 
   void _logSupabaseError(String operation, Object e) {
+    // supabase_flutter biasanya mengirim PostgrestException
+    // (punya message/statusCode/details/hint).
     debugPrint('[RoomService][$operation] Error: $e');
+
+    if (e is PostgrestException) {
+      debugPrint('[RoomService][$operation] PostgrestException message: ${e.message}');
+      // status code getter berbeda antar versi package,
+      // jadi kita log message juga sudah cukup.
+
+      debugPrint('[RoomService][$operation] details: ${e.details}');
+      debugPrint('[RoomService][$operation] hint: ${e.hint}');
+    }
   }
+
 
 
   Future<Map<String, dynamic>?> createRoom({
